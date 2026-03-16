@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourName.dev — Portfolio OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Berkeley+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --sand: #e8e0d0;
+  --sand2: #ddd5c3;
+  --sand3: #d0c8b4;
+  --bark: #8b7355;
+  --bark2: #6b5a3e;
+  --ink: #1a1410;
+  --ink2: #3d2e1e;
+  --muted: #9b8c7a;
+  --win-bg: #faf7f2;
+  --win-border: #c4b89a;
+  --accent: #c0392b;
+  --accent2: #2980b9;
+  --green: #27ae60;
+  --yellow: #f39c12;
+  --shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.12);
+  --shadow2: 0 20px 60px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.15);
+}
+
+body {
+  font-family: 'Berkeley Mono', monospace;
+  background: var(--sand);
+  min-height: 100vh;
+  overflow: hidden;
+  cursor: default;
+  user-select: none;
+}
+
+/* ── DESKTOP TEXTURE ── */
+.desktop {
+  position: fixed; inset: 0;
+  background-color: var(--sand);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── MENUBAR ── */
+.menubar {
+  position: fixed; top:0; left:0; right:0;
+  height: 28px;
+  background: rgba(232,224,208,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--win-border);
+  display: flex; align-items: center;
+  padding: 0 16px;
+  z-index: 9999;
+  gap: 20px;
+}
+
+.menubar-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 14px;
+  color: var(--ink);
+  font-style: italic;
+  margin-right: 4px;
+}
+
+.menubar-item {
+  font-size: 12px;
+  color: var(--ink2);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.menubar-item:hover { background: rgba(0,0,0,0.08); }
+
+.menubar-right {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 14px;
+  font-size: 11px; color: var(--muted);
+}
+
+/* ── DESKTOP ICONS ── */
+.icon-zone {
+  position: fixed;
+  left: 24px;
+  top: 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 100;
+}
+
+.desk-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 76px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.desk-icon:hover { background: rgba(0,0,0,0.08); }
+.desk-icon.active { background: rgba(41,128,185,0.18); }
+
+.icon-img {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.15s;
+}
+.desk-icon:hover .icon-img { transform: scale(1.08); }
+
+.icon-label {
+  font-size: 11px;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.6);
+}
+
+/* Icon colors */
+.icon-about   { background: linear-gradient(145deg,#f5e6d3,#e8c9a0); }
+.icon-projects{ background: linear-gradient(145deg,#dce8f5,#a8c8e8); }
+.icon-certs   { background: linear-gradient(145deg,#f0f5dc,#c8d88a); }
+.icon-stack   { background: linear-gradient(145deg,#f5dce8,#e8a8c8); }
+.icon-blog    { background: linear-gradient(145deg,#dce8dc,#a8c8a8); }
+.icon-contact { background: linear-gradient(145deg,#f5f0dc,#e8d88a); }
+.icon-finder  { background: linear-gradient(145deg,#dce8f5,#7ab0d4); }
+
+/* ── DOCK ── */
+.dock {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: flex-end; gap: 10px;
+  background: rgba(232,224,208,0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 18px;
+  padding: 8px 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.5);
+  z-index: 200;
+}
+
+.dock-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  cursor: pointer;
+  transition: transform 0.15s;
+  position: relative;
+}
+.dock-item:hover { transform: translateY(-8px) scale(1.15); }
+.dock-item:hover .dock-tooltip { opacity: 1; transform: translateY(-4px); }
+
+.dock-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.dock-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--ink2);
+  opacity: 0;
+}
+.dock-item.open .dock-dot { opacity: 1; }
+
+.dock-tooltip {
+  position: absolute;
+  bottom: 56px;
+  background: rgba(30,20,10,0.85);
+  color: #fff;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: all 0.15s;
+  pointer-events: none;
+}
+
+/* ── WINDOWS ── */
+.window {
+  position: fixed;
+  background: var(--win-bg);
+  border: 1px solid var(--win-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow2);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 500;
+  min-width: 400px;
+  min-height: 300px;
+  transition: box-shadow 0.2s;
+}
+.window.visible { display: flex; animation: winOpen 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+.window.focused { z-index: 600; box-shadow: var(--shadow2); }
+.window.minimized { display: none; }
+
+@keyframes winOpen {
+  from { opacity:0; transform: scale(0.88); }
+  to { opacity:1; transform: scale(1); }
+}
+
+/* Titlebar */
+.win-titlebar {
+  height: 38px;
+  background: linear-gradient(180deg, #ede5d8 0%, #e4dbc9 100%);
+  border-bottom: 1px solid var(--win-border);
+  display: flex; align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+  cursor: grab;
+  flex-shrink: 0;
+}
+.win-titlebar:active { cursor: grabbing; }
+
+.win-controls { display: flex; gap: 7px; }
+.win-btn {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s;
+  position: relative;
+}
+.win-btn:hover { filter: brightness(0.85); }
+.win-btn.close { background: #ed6a5e; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.15); }
+.win-btn.minimize { background: #f5c542; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.15); }
+.win-btn.maximize { background: #62c555; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.15); }
+.win-btn::after { content:''; position:absolute; inset:0; border-radius:50%; }
+
+.win-title {
+  flex: 1; text-align: center;
+  font-size: 12px; font-weight: 700;
+  color: var(--ink2);
+  letter-spacing: 0.01em;
+  pointer-events: none;
+}
+
+/* Window content */
+.win-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+}
+
+.win-sidebar {
+  width: 180px;
+  background: rgba(0,0,0,0.03);
+  border-right: 1px solid var(--win-border);
+  padding: 12px 0;
+  flex-shrink: 0;
+}
+.sidebar-section {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 14px 4px;
+  font-weight: 700;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--ink2);
+  cursor: pointer;
+  border-radius: 6px;
+  margin: 0 4px;
+  transition: background 0.12s;
+}
+.sidebar-item:hover { background: rgba(0,0,0,0.06); }
+.sidebar-item.active { background: rgba(41,128,185,0.15); color: #1a5a8a; }
+.sidebar-item .si-icon { font-size: 14px; }
+
+.win-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+}
+
+/* ── TYPOGRAPHY ── */
+.win-content h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 28px;
+  color: var(--ink);
+  margin-bottom: 6px;
+  font-weight: 400;
+  line-height: 1.15;
+}
+.win-content h3 {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  margin-top: 24px;
+  font-weight: 700;
+}
+.win-content p {
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+
+/* ── ABOUT CONTENT ── */
+.about-hero {
+  display: flex; align-items: flex-start; gap: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--win-border);
+}
+.avatar {
+  width: 72px; height: 72px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #c8a882, #8b6b45);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+}
+.about-name {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  color: var(--ink);
+  font-weight: 400;
+}
+.about-role {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+.about-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+.tag {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: 1px solid var(--win-border);
+  color: var(--ink2);
+  background: rgba(255,255,255,0.6);
+}
+
+/* ── PROJECTS CONTENT ── */
+.proj-list { display: flex; flex-direction: column; gap: 12px; }
+.proj-item {
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--win-border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.proj-item::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+}
+.proj-item.p1::before { background: #38bdf8; }
+.proj-item.p2::before { background: #a78bfa; }
+.proj-item.p3::before { background: #34d399; }
+.proj-item.p4::before { background: #fb923c; }
+.proj-item.p5::before { background: #f87171; }
+.proj-item.p6::before { background: #f472b6; }
+.proj-item:hover { background: rgba(255,255,255,0.85); box-shadow: 0 3px 12px rgba(0,0,0,0.08); transform: translateX(2px); }
+
+.proj-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.proj-item-icon { font-size: 18px; }
+.proj-item-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+.proj-item-phase { font-size: 10px; color: var(--muted); margin-left: auto; }
+.proj-item-desc { font-size: 11px; color: var(--ink2); line-height: 1.6; margin-bottom: 10px; }
+.proj-item-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.proj-tag {
+  font-size: 10px; padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.05);
+  color: var(--ink2);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* ── CERT CONTENT ── */
+.cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cert-card {
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--win-border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.cert-badge-big { font-size: 28px; }
+.cert-name-text { font-size: 12px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.cert-detail-text { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.cert-status {
+  font-size: 10px; padding: 2px 8px;
+  border-radius: 3px; width: fit-content;
+}
+.cert-status.high { background: rgba(196,57,43,0.1); color: var(--accent); border: 1px solid rgba(196,57,43,0.2); }
+.cert-status.progress { background: rgba(39,174,96,0.1); color: var(--green); border: 1px solid rgba(39,174,96,0.2); }
+.cert-status.planned { background: rgba(155,140,122,0.1); color: var(--muted); border: 1px solid var(--win-border); }
+
+/* ── STACK CONTENT ── */
+.stack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stack-item {
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--win-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.stack-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.stack-name { font-size: 11px; color: var(--ink2); font-weight: 500; }
+.stack-cat { font-size: 9px; color: var(--muted); }
+
+/* ── CONTACT CONTENT ── */
+.contact-list { display: flex; flex-direction: column; gap: 10px; }
+.contact-item {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--win-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.contact-item:hover { background: rgba(255,255,255,0.85); transform: translateX(3px); }
+.contact-icon { font-size: 20px; }
+.contact-label { font-size: 12px; font-weight: 700; color: var(--ink); }
+.contact-value { font-size: 11px; color: var(--muted); }
+.contact-arrow { margin-left: auto; font-size: 14px; color: var(--muted); }
+
+/* ── STATUS BAR ── */
+.win-statusbar {
+  height: 26px;
+  border-top: 1px solid var(--win-border);
+  background: rgba(0,0,0,0.03);
+  display: flex; align-items: center; padding: 0 12px;
+  font-size: 10px; color: var(--muted);
+  gap: 16px;
+  flex-shrink: 0;
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+/* ── RESIZE HANDLE ── */
+.win-resize {
+  position: absolute; right: 0; bottom: 0;
+  width: 16px; height: 16px;
+  cursor: nw-resize;
+  opacity: 0.4;
+}
+.win-resize svg { width: 100%; height: 100%; }
+
+/* ── WELCOME CARD ── */
+.welcome {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 50;
+  animation: fadeWelcome 3s ease forwards;
+}
+@keyframes fadeWelcome {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.welcome-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 42px;
+  color: var(--ink);
+  font-style: italic;
+  opacity: 0.35;
+}
+.welcome-sub { font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: 0.1em; }
+
+/* ── BLOG CONTENT ── */
+.post-list { display: flex; flex-direction: column; gap: 10px; }
+.post-item {
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--win-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.post-item:hover { background: rgba(255,255,255,0.85); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.post-date { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.post-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+.post-excerpt { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.post-tags { display: flex; gap: 5px; margin-top: 8px; }
+.post-tag { font-size: 9px; padding: 2px 6px; border-radius: 3px; background: rgba(0,0,0,0.05); color: var(--muted); }
+
+/* desktop right decorative */
+.deco-time {
+  position: fixed;
+  right: 28px; bottom: 80px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 13px;
+  color: rgba(61,46,30,0.35);
+  text-align: right;
+  pointer-events: none;
+  z-index: 10;
+  line-height: 1.6;
+  font-style: italic;
+}
+</style>
+</head>
+<body>
+
+<!-- DESKTOP -->
+<div class="desktop"></div>
+
+<!-- MENUBAR -->
+<div class="menubar">
+  <span class="menubar-logo">✦ YourName</span>
+  <span class="menubar-item">File</span>
+  <span class="menubar-item">View</span>
+  <span class="menubar-item">Projects</span>
+  <span class="menubar-item">Help</span>
+  <div class="menubar-right">
+    <span id="menubar-time">—</span>
+    <span>⌘</span>
+  </div>
+</div>
+
+<!-- DESKTOP ICONS -->
+<div class="icon-zone">
+  <div class="desk-icon" onclick="openWindow('about')" id="di-about">
+    <div class="icon-img icon-about">👤</div>
+    <div class="icon-label">about.md</div>
+  </div>
+  <div class="desk-icon" onclick="openWindow('projects')" id="di-projects">
+    <div class="icon-img icon-projects">📁</div>
+    <div class="icon-label">projects/</div>
+  </div>
+  <div class="desk-icon" onclick="openWindow('certs')" id="di-certs">
+    <div class="icon-img icon-certs">🏅</div>
+    <div class="icon-label">certs.json</div>
+  </div>
+  <div class="desk-icon" onclick="openWindow('stack')" id="di-stack">
+    <div class="icon-img icon-stack">⚙️</div>
+    <div class="icon-label">stack.yml</div>
+  </div>
+  <div class="desk-icon" onclick="openWindow('blog')" id="di-blog">
+    <div class="icon-img icon-blog">✍️</div>
+    <div class="icon-label">writing/</div>
+  </div>
+  <div class="desk-icon" onclick="openWindow('contact')" id="di-contact">
+    <div class="icon-img icon-contact">📬</div>
+    <div class="icon-label">contact.sh</div>
+  </div>
+</div>
+
+<!-- WELCOME -->
+<div class="welcome">
+  <div class="welcome-title">Welcome.</div>
+  <div class="welcome-sub">Double-click any icon to open</div>
+</div>
+
+<!-- DECO TIME -->
+<div class="deco-time" id="deco-time">
+  <div id="deco-clock">—</div>
+  <div id="deco-date">—</div>
+</div>
+
+<!-- ════════════════ WINDOWS ════════════════ -->
+
+<!-- ABOUT -->
+<div class="window" id="win-about" style="width:680px;height:480px;top:80px;left:120px;">
+  <div class="win-titlebar" data-win="about">
+    <div class="win-controls">
+      <button class="win-btn close" onclick="closeWindow('about')"></button>
+      <button class="win-btn minimize" onclick="minimizeWindow('about')"></button>
+      <button class="win-btn maximize" onclick="maximizeWindow('about')"></button>
+    </div>
+    <div class="win-title">about.md — YourName</div>
+  </div>
+  <div class="win-body">
+    <div class="win-sidebar">
+      <div class="sidebar-section">Navigation</div>
+      <div class="sidebar-item active" onclick="switchSection(this, 'about-main')"><span class="si-icon">👤</span> About me</div>
+      <div class="sidebar-item" onclick="switchSection(this, 'about-exp')"><span class="si-icon">💼</span> Experience</div>
+      <div class="sidebar-section">Shortcuts</div>
+      <div class="sidebar-item" onclick="openWindow('projects')"><span class="si-icon">📁</span> Projects</div>
+      <div class="sidebar-item" onclick="openWindow('contact')"><span class="si-icon">📬</span> Contact</div>
+    </div>
+    <div class="win-content">
+      <div id="about-main">
+        <div class="about-hero">
+          <div class="avatar">🧑‍💻</div>
+          <div>
+            <div class="about-name">Your Name</div>
+            <div class="about-role">Sales Engineer → Solutions Architect</div>
+            <div class="about-tags">
+              <span class="tag">GCP</span>
+              <span class="tag">Kafka</span>
+              <span class="tag">Kubernetes</span>
+              <span class="tag">AI/LLMs</span>
+              <span class="tag">Snowflake</span>
+              <span class="tag">Databricks</span>
+            </div>
+          </div>
+        </div>
+        <p>I'm a technical professional with a background in Sales Engineering, currently building expertise in cloud infrastructure, data engineering, and AI systems. I build in public — every project here is running in production, not on my laptop.</p>
+        <p>After reaching the final round for a Technical Architect position, I decided to close the skill gaps systematically. This site documents that journey: 6 real projects, 4 certifications, and counting.</p>
+        <h3>Currently building</h3>
+        <p>🛰️ <strong>Space Weather Streamer</strong> — Real-time NASA API pipeline with Kafka + GCP<br>
+        🏦 <strong>Bank Liquidity Forecast</strong> — ML forecasting with Databricks + Snowflake</p>
+        <h3>Location & availability</h3>
+        <p>📍 Your City — Open to remote and hybrid roles globally.<br>
+        ✉️ Actively looking for Solutions Architect / Technical Architect roles.</p>
+      </div>
+      <div id="about-exp" style="display:none;">
+        <h2>Experience</h2>
+        <h3>Recent</h3>
+        <p><strong>Sales Engineer</strong> — Previous Company<br>
+        <span style="font-size:11px;color:var(--muted);">2021 – 2024</span><br>
+        Led technical discovery and solution design for enterprise accounts. Reached final round for Technical Architect role — the motivation for this entire portfolio.</p>
+        <h3>Education</h3>
+        <p>Your Degree — Your University</p>
+      </div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-dot"></div>
+    <span>about.md</span>
+    <span>·</span>
+    <span>Available for work</span>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<div class="window" id="win-projects" style="width:720px;height:560px;top:60px;left:160px;">
+  <div class="win-titlebar" data-win="projects">
+    <div class="win-controls">
+      <button class="win-btn close" onclick="closeWindow('projects')"></button>
+      <button class="win-btn minimize" onclick="minimizeWindow('projects')"></button>
+      <button class="win-btn maximize" onclick="maximizeWindow('projects')"></button>
+    </div>
+    <div class="win-title">projects/ — 6 items</div>
+  </div>
+  <div class="win-body">
+    <div class="win-sidebar">
+      <div class="sidebar-section">Filter</div>
+      <div class="sidebar-item active" onclick="filterProjects('all', this)"><span class="si-icon">📂</span> All (6)</div>
+      <div class="sidebar-item" onclick="filterProjects('streaming', this)"><span class="si-icon">🌊</span> Streaming</div>
+      <div class="sidebar-item" onclick="filterProjects('ml', this)"><span class="si-icon">🧠</span> ML / AI</div>
+      <div class="sidebar-item" onclick="filterProjects('infra', this)"><span class="si-icon">☁️</span> Infra</div>
+      <div class="sidebar-section">Status</div>
+      <div class="sidebar-item"><span class="si-icon">🟡</span> In progress (2)</div>
+      <div class="sidebar-item"><span class="si-icon">⬜</span> Planned (4)</div>
+    </div>
+    <div class="win-content">
+      <div class="proj-list" id="proj-list">
+        <div class="proj-item p1" data-cat="streaming">
+          <div class="proj-item-header">
+            <span class="proj-item-icon">🛰️</span>
+            <span class="proj-item-name">Space Weather Streamer</span>
+            <span class="proj-item-phase">🟡 In progress</span>
+          </div>
+          <div class="proj-item-desc">Real-time pipeline consuming NASA DONKI API events (solar flares, geomagnetic storms). Processed with Kafka + Flink, stored in BigQuery, monitored via Datadog.</div>
+          <div class="proj-item-tags">
+            <span class="proj-tag">Kafka</span>
+            <span class="proj-tag">Apache Flink</span>
+            <span class="proj-tag">GCP</span>
+            <span class="proj-tag">BigQuery</span>
+            <span class="proj-tag">Datadog</span>
+            <span class="proj-tag">Python</span>
+          </div>
+        </div>
+        <div class="proj-item p2" data-cat="ml">
+          <div class="proj-item-header">
+            <span class="proj-item-icon">🏦</span>
+            <span class="proj-item-name">Bank Liquidity Forecast Engine</span>
+            <span class="proj-item-phase">🟡 In progress</span>
+          </div>
+          <div class="proj-item-desc">Predicts 7 and 30-day cash flow for banking institutions using Prophet + LSTM ensemble. Trained on Databricks, served via FastAPI, data warehouse on Snowflake.</div>
+          <div class="proj-item-tags">
+            <span class="proj-tag">Databricks</span>
+            <span class="proj-tag">Snowflake</span>
+            <span class="proj-tag">MLflow</span>
+            <span class="proj-tag">Prophet</span>
+            <span class="proj-tag">LSTM</span>
+            <span class="proj-tag">dbt</span>
+          </div>
+        </div>
+        <div class="proj-item p3" data-cat="ml">
+          <div class="proj-item-header">
+            <span class="proj-item-icon">🤖</span>
+            <span class="proj-item-name">SRE Incident Response Copilot</span>
+            <span class="proj-item-phase">⬜ Planned</span>
+          </div>
+          <div class="proj-item-desc">LLM-powered assistant that ingests Datadog/PagerDuty alerts, retrieves relevant runbooks via RAG, and generates step-by-step remediation plans in Slack.</div>
+          <div class="proj-item-tags">
+            <span class="proj-tag">Claude API</span>
+            <span class="proj-tag">LangChain</span>
+            <span class="proj-tag">RAG</span>
+            <span class="proj-tag">ChromaDB</span>
+            <span class="proj-tag">Slack</span>
+          </div>
+        </div>
+        <div class="proj-item p4" data-cat="infra">
+          <div class="proj-item-header">
+            <span class="proj-item-icon">🔌</span>
+            <span class="proj-item-name">Multi-Tenant API Gateway</span>
+            <span class="proj-item-phase">⬜ Planned</span>
+          </div>
+          <div class="proj-item-desc">Production-grade API gateway with per-tenant rate limiting, dual-mode auth (API key + JWT), Redis sliding window, and admin self-service portal.</div>
+          <div class="proj-item-tags">
+            <span class="proj-tag">FastAPI</span>
+            <span class="proj-tag">Redis</span>
+            <span class="proj-tag">PostgreSQL</span>
+            <span class="proj-tag">Prometheus</span>
+            <span class="proj-tag">GCP</span>
+          </div>
+        </div>
+        <div class="proj-item p5" data-cat="infra">
+          <div class="proj-item-header">
+            <span class="proj-item-icon">🔐</span>
+            <span class="proj-item-name">Zero Trust Service Mesh</span>
+            <span class="proj-item-phase">⬜ Planned</span>
+          </div>
+          <div class="proj-item-desc">Zero Trust networking on GKE using Istio + SPIRE for cryptographic workload identity, automatic mTLS, OPA Gatekeeper policies, and Kiali audit dashboard.</div>
+          <div class="proj-item-tags">
+            <span class="proj-tag">Istio</span>
+            <span class="proj-tag">SPIRE</span>
+            <span class="proj-tag">mTLS</span>
+            <span class="proj-tag">OPA</span>
+            <span class="proj-tag">GKE</span>
+          </div>
+        </div>
+        <div class="proj-item p6" data-cat="infra">
+          <div class="proj-item-header">
+            <span class="proj-item-icon">☸️</span>
+            <span class="proj-item-name">GitOps Progressive Delivery Platform</span>
+            <span class="proj-item-phase">⬜ Planned</span>
+          </div>
+          <div class="proj-item-desc">Full GitOps platform on GKE with ArgoCD for declarative sync, Argo Rollouts for canary deployments with automatic metric-based rollback, and Kyverno admission policies.</div>
+          <div class="proj-item-tags">
+            <span class="proj-tag">ArgoCD</span>
+            <span class="proj-tag">Argo Rollouts</span>
+            <span class="proj-tag">Kyverno</span>
+            <span class="proj-tag">Helm</span>
+            <span class="proj-tag">GKE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-dot"></div>
+    <span>6 projects</span>
+    <span>·</span>
+    <span>2 live · 4 in roadmap</span>
+    <span style="margin-left:auto;">GitHub ↗</span>
+  </div>
+</div>
+
+<!-- CERTS -->
+<div class="window" id="win-certs" style="width:580px;height:480px;top:90px;left:200px;">
+  <div class="win-titlebar" data-win="certs">
+    <div class="win-controls">
+      <button class="win-btn close" onclick="closeWindow('certs')"></button>
+      <button class="win-btn minimize" onclick="minimizeWindow('certs')"></button>
+      <button class="win-btn maximize" onclick="maximizeWindow('certs')"></button>
+    </div>
+    <div class="win-title">certs.json — 4 certifications</div>
+  </div>
+  <div class="win-body">
+    <div class="win-content" style="padding:24px;">
+      <h2>Certifications</h2>
+      <p style="margin-bottom:20px;">Current and target certifications. All verified links included on badge.</p>
+      <div class="cert-grid">
+        <div class="cert-card">
+          <div class="cert-badge-big">☁️</div>
+          <div class="cert-name-text">GCP Professional Cloud Architect</div>
+          <div class="cert-detail-text">Google Cloud · Studying in parallel with Project 1 & 2</div>
+          <div class="cert-status high">Target — Month 3</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-badge-big">🔶</div>
+          <div class="cert-name-text">Databricks Data Engineer Associate</div>
+          <div class="cert-detail-text">Databricks Academy · Free learning path available</div>
+          <div class="cert-status high">Target — Month 5</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-badge-big">☸️</div>
+          <div class="cert-name-text">CKA — Certified Kubernetes Admin</div>
+          <div class="cert-detail-text">CNCF · Hands-on exam, no MCQ. Hardest of the four.</div>
+          <div class="cert-status planned">Target — Month 7</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-badge-big">❄️</div>
+          <div class="cert-name-text">SnowPro Core</div>
+          <div class="cert-detail-text">Snowflake · Quickest to get. 2 weeks of prep.</div>
+          <div class="cert-status planned">Target — Month 9</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-dot" style="background:var(--yellow);"></div>
+    <span>0 / 4 completed</span>
+    <span>·</span>
+    <span>Building in public</span>
+  </div>
+</div>
+
+<!-- STACK -->
+<div class="window" id="win-stack" style="width:620px;height:500px;top:70px;left:180px;">
+  <div class="win-titlebar" data-win="stack">
+    <div class="win-controls">
+      <button class="win-btn close" onclick="closeWindow('stack')"></button>
+      <button class="win-btn minimize" onclick="minimizeWindow('stack')"></button>
+      <button class="win-btn maximize" onclick="maximizeWindow('stack')"></button>
+    </div>
+    <div class="win-title">stack.yml — Technology Radar</div>
+  </div>
+  <div class="win-body">
+    <div class="win-sidebar">
+      <div class="sidebar-section">Categories</div>
+      <div class="sidebar-item active"><span class="si-icon">☁️</span> Cloud</div>
+      <div class="sidebar-item"><span class="si-icon">🌊</span> Streaming</div>
+      <div class="sidebar-item"><span class="si-icon">📊</span> Data</div>
+      <div class="sidebar-item"><span class="si-icon">🐍</span> Languages</div>
+      <div class="sidebar-item"><span class="si-icon">☸️</span> DevOps</div>
+      <div class="sidebar-item"><span class="si-icon">🔒</span> Security</div>
+    </div>
+    <div class="win-content">
+      <h2>Tech Stack</h2>
+      <h3>Cloud & Infrastructure</h3>
+      <div class="stack-grid">
+        <div class="stack-item"><div class="stack-dot" style="background:#4285f4;"></div><div><div class="stack-name">GCP</div><div class="stack-cat">Primary cloud</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#0089d6;"></div><div><div class="stack-name">Azure</div><div class="stack-cat">Secondary</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#f87171;"></div><div><div class="stack-name">Terraform</div><div class="stack-cat">IaC</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#326ce5;"></div><div><div class="stack-name">Kubernetes</div><div class="stack-cat">Orchestration</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#0db7ed;"></div><div><div class="stack-name">Docker</div><div class="stack-cat">Containers</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#fb923c;"></div><div><div class="stack-name">Helm</div><div class="stack-cat">K8s packages</div></div></div>
+      </div>
+      <h3>Data & Streaming</h3>
+      <div class="stack-grid">
+        <div class="stack-item"><div class="stack-dot" style="background:#231f20;"></div><div><div class="stack-name">Apache Kafka</div><div class="stack-cat">Streaming</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#e25a1c;"></div><div><div class="stack-name">Apache Flink</div><div class="stack-cat">Processing</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#29b5e8;"></div><div><div class="stack-name">Snowflake</div><div class="stack-cat">Data warehouse</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#ff3621;"></div><div><div class="stack-name">Databricks</div><div class="stack-cat">ML platform</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#34d399;"></div><div><div class="stack-name">dbt</div><div class="stack-cat">Transforms</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#667eea;"></div><div><div class="stack-name">BigQuery</div><div class="stack-cat">Analytics</div></div></div>
+      </div>
+      <h3>Languages & AI</h3>
+      <div class="stack-grid">
+        <div class="stack-item"><div class="stack-dot" style="background:#3776ab;"></div><div><div class="stack-name">Python</div><div class="stack-cat">Primary</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#b07219;"></div><div><div class="stack-name">Java</div><div class="stack-cat">Secondary</div></div></div>
+        <div class="stack-item"><div class="stack-dot" style="background:#a78bfa;"></div><div><div class="stack-name">LangChain</div><div class="stack-cat">LLM framework</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-dot"></div>
+    <span>16 technologies</span>
+    <span>·</span>
+    <span>Actively expanding</span>
+  </div>
+</div>
+
+<!-- BLOG -->
+<div class="window" id="win-blog" style="width:640px;height:480px;top:100px;left:140px;">
+  <div class="win-titlebar" data-win="blog">
+    <div class="win-controls">
+      <button class="win-btn close" onclick="closeWindow('blog')"></button>
+      <button class="win-btn minimize" onclick="minimizeWindow('blog')"></button>
+      <button class="win-btn maximize" onclick="maximizeWindow('blog')"></button>
+    </div>
+    <div class="win-title">writing/ — Technical posts</div>
+  </div>
+  <div class="win-body">
+    <div class="win-sidebar">
+      <div class="sidebar-section">Platform</div>
+      <div class="sidebar-item active"><span class="si-icon">💼</span> LinkedIn</div>
+      <div class="sidebar-item"><span class="si-icon">📝</span> Medium</div>
+      <div class="sidebar-section">Topics</div>
+      <div class="sidebar-item"><span class="si-icon">🌊</span> Kafka / Streaming</div>
+      <div class="sidebar-item"><span class="si-icon">☁️</span> GCP / Cloud</div>
+      <div class="sidebar-item"><span class="si-icon">🤖</span> AI / LLMs</div>
+    </div>
+    <div class="win-content">
+      <h2>Writing</h2>
+      <p style="margin-bottom:20px;">Technical posts published as I build. One post per project, documenting decisions and learnings.</p>
+      <div class="post-list">
+        <div class="post-item">
+          <div class="post-date">Coming soon</div>
+          <div class="post-title">Why Kafka needs watermarks to handle late events (and why it matters)</div>
+          <div class="post-excerpt">A practical explanation of event-time vs processing-time, watermarks, and how I implemented them in the Space Weather pipeline to avoid losing late-arriving solar flare data.</div>
+          <div class="post-tags"><span class="post-tag">Kafka</span><span class="post-tag">Streaming</span></div>
+        </div>
+        <div class="post-item">
+          <div class="post-date">Coming soon</div>
+          <div class="post-title">Why I used Prophet + LSTM instead of just one model for bank liquidity</div>
+          <div class="post-excerpt">Prophet handles structural seasonality (month-end effects, quarter-end spikes). LSTM captures non-linear short-term patterns. Neither beats the ensemble in backtesting.</div>
+          <div class="post-tags"><span class="post-tag">ML</span><span class="post-tag">Databricks</span><span class="post-tag">Fintech</span></div>
+        </div>
+        <div class="post-item">
+          <div class="post-date">Coming soon</div>
+          <div class="post-title">Building in public as an unemployed SA — what I'm actually doing</div>
+          <div class="post-excerpt">After reaching the final round for a Technical Architect role, I decided to close the gap systematically. Here's the exact plan and why I'm doing it in public.</div>
+          <div class="post-tags"><span class="post-tag">Career</span><span class="post-tag">Building in public</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-dot" style="background:var(--yellow);"></div>
+    <span>3 posts drafting</span>
+    <span>·</span>
+    <span>1 post / project</span>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="window" id="win-contact" style="width:500px;height:380px;top:110px;left:200px;">
+  <div class="win-titlebar" data-win="contact">
+    <div class="win-controls">
+      <button class="win-btn close" onclick="closeWindow('contact')"></button>
+      <button class="win-btn minimize" onclick="minimizeWindow('contact')"></button>
+      <button class="win-btn maximize" onclick="maximizeWindow('contact')"></button>
+    </div>
+    <div class="win-title">contact.sh — Get in touch</div>
+  </div>
+  <div class="win-body">
+    <div class="win-content">
+      <h2>Let's talk.</h2>
+      <p>Open to Solutions Architect, Technical Architect, and Senior Sales Engineer roles. Also happy to connect with anyone working on interesting infrastructure or AI problems.</p>
+      <div class="contact-list" style="margin-top:20px;">
+        <a class="contact-item" href="mailto:you@yourname.dev">
+          <span class="contact-icon">✉️</span>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-value">you@yourname.dev</div>
+          </div>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a class="contact-item" href="https://linkedin.com" target="_blank">
+          <span class="contact-icon">💼</span>
+          <div>
+            <div class="contact-label">LinkedIn</div>
+            <div class="contact-value">linkedin.com/in/yourname</div>
+          </div>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a class="contact-item" href="https://github.com" target="_blank">
+          <span class="contact-icon">🐙</span>
+          <div>
+            <div class="contact-label">GitHub</div>
+            <div class="contact-value">github.com/yourname</div>
+          </div>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a class="contact-item" href="#" onclick="openWindow('about');return false;">
+          <span class="contact-icon">📄</span>
+          <div>
+            <div class="contact-label">Resume / CV</div>
+            <div class="contact-value">Download PDF</div>
+          </div>
+          <span class="contact-arrow">↓</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-dot"></div>
+    <span>Available for work</span>
+    <span>·</span>
+    <span>Response within 24h</span>
+  </div>
+</div>
+
+<!-- DOCK -->
+<div class="dock">
+  <div class="dock-item" id="dock-about" onclick="openWindow('about')">
+    <div class="dock-icon icon-about">👤</div>
+    <div class="dock-dot"></div>
+    <div class="dock-tooltip">About</div>
+  </div>
+  <div class="dock-item" id="dock-projects" onclick="openWindow('projects')">
+    <div class="dock-icon icon-projects">📁</div>
+    <div class="dock-dot"></div>
+    <div class="dock-tooltip">Projects</div>
+  </div>
+  <div class="dock-item" id="dock-certs" onclick="openWindow('certs')">
+    <div class="dock-icon icon-certs">🏅</div>
+    <div class="dock-dot"></div>
+    <div class="dock-tooltip">Certs</div>
+  </div>
+  <div class="dock-item" id="dock-stack" onclick="openWindow('stack')">
+    <div class="dock-icon icon-stack">⚙️</div>
+    <div class="dock-dot"></div>
+    <div class="dock-tooltip">Stack</div>
+  </div>
+  <div class="dock-item" id="dock-blog" onclick="openWindow('blog')">
+    <div class="dock-icon icon-blog">✍️</div>
+    <div class="dock-dot"></div>
+    <div class="dock-tooltip">Writing</div>
+  </div>
+  <div class="dock-item" id="dock-contact" onclick="openWindow('contact')">
+    <div class="dock-icon icon-contact">📬</div>
+    <div class="dock-dot"></div>
+    <div class="dock-tooltip">Contact</div>
+  </div>
+</div>
+
+<script>
+// ── TIME ──
+function updateTime() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+  const dateStr = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  document.getElementById('menubar-time').textContent = dateStr + '  ' + timeStr;
+  document.getElementById('deco-clock').textContent = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  document.getElementById('deco-date').textContent = dateStr;
+}
+updateTime(); setInterval(updateTime, 1000);
+
+// ── WINDOW MANAGEMENT ──
+let zTop = 600;
+const openWindows = {};
+
+function openWindow(name) {
+  const win = document.getElementById('win-' + name);
+  if (!win) return;
+  win.classList.remove('minimized');
+  win.style.display = 'flex';
+  if (!win.classList.contains('visible')) {
+    win.classList.add('visible');
+  }
+  focusWindow(name);
+  openWindows[name] = true;
+  document.getElementById('dock-' + name)?.classList.add('open');
+  document.getElementById('di-' + name)?.classList.add('active');
+}
+
+function closeWindow(name) {
+  const win = document.getElementById('win-' + name);
+  if (!win) return;
+  win.classList.remove('visible');
+  win.style.display = 'none';
+  delete openWindows[name];
+  document.getElementById('dock-' + name)?.classList.remove('open');
+  document.getElementById('di-' + name)?.classList.remove('active');
+}
+
+function minimizeWindow(name) {
+  const win = document.getElementById('win-' + name);
+  if (!win) return;
+  win.classList.add('minimized');
+  win.style.display = 'none';
+}
+
+function maximizeWindow(name) {
+  const win = document.getElementById('win-' + name);
+  if (!win) return;
+  if (win.dataset.maximized === 'true') {
+    win.style.cssText = win.dataset.prevStyle || '';
+    win.dataset.maximized = 'false';
+  } else {
+    win.dataset.prevStyle = win.style.cssText;
+    win.style.left = '110px'; win.style.top = '36px';
+    win.style.width = (window.innerWidth - 140) + 'px';
+    win.style.height = (window.innerHeight - 72) + 'px';
+    win.dataset.maximized = 'true';
+  }
+}
+
+function focusWindow(name) {
+  document.querySelectorAll('.window').forEach(w => w.classList.remove('focused'));
+  const win = document.getElementById('win-' + name);
+  if (win) { win.classList.add('focused'); win.style.zIndex = ++zTop; }
+}
+
+// ── DRAG ──
+document.querySelectorAll('.win-titlebar').forEach(bar => {
+  let dragging = false, ox = 0, oy = 0;
+  bar.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('win-btn')) return;
+    const win = bar.closest('.window');
+    focusWindow(win.id.replace('win-', ''));
+    dragging = true;
+    ox = e.clientX - win.offsetLeft;
+    oy = e.clientY - win.offsetTop;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const win = bar.closest('.window');
+    win.style.left = Math.max(0, e.clientX - ox) + 'px';
+    win.style.top = Math.max(28, e.clientY - oy) + 'px';
+  });
+  document.addEventListener('mouseup', () => { dragging = false; });
+});
+
+// Click to focus
+document.querySelectorAll('.window').forEach(win => {
+  win.addEventListener('mousedown', () => {
+    focusWindow(win.id.replace('win-', ''));
+  });
+});
+
+// ── SECTION SWITCH ──
+function switchSection(el, sectionId) {
+  const win = el.closest('.window');
+  win.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  win.querySelectorAll('[id^="about-"]').forEach(s => s.style.display = 'none');
+  const target = document.getElementById(sectionId);
+  if (target) target.style.display = 'block';
+}
+
+// ── PROJECT FILTER ──
+function filterProjects(cat, el) {
+  document.querySelectorAll('#win-projects .sidebar-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.proj-item').forEach(item => {
+    if (cat === 'all' || item.dataset.cat === cat) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const focused = document.querySelector('.window.focused');
+    if (focused) closeWindow(focused.id.replace('win-', ''));
+  }
+});
+
+// ── OPEN ABOUT ON LOAD ──
+setTimeout(() => {
+  openWindow('about');
+  // cascade windows slightly
+  setTimeout(() => {
+    const projWin = document.getElementById('win-projects');
+    projWin.style.top = '90px'; projWin.style.left = '200px';
+  }, 100);
+}, 600);
+</script>
+</body>
+</html>
